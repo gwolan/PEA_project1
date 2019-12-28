@@ -1,7 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <cstdlib>
-#include <Miscellanous/Stopwatch.hpp>
+#include <Miscellanous/Timer.hpp>
 #include <Miscellanous/ParametricArray.hpp>
 #include <Graph/ArrayGraph.hpp>
 #include <Graph/ListGraph.hpp>
@@ -24,7 +24,7 @@ const bool useListGraph = false;
 
 int main()
 {
-    Stopwatch clock;                // czasomierz
+    Timer timer;                // czasomierz
     char menuSelection;
     Graph *graph = NULL;            // <- tu bedziemy zapisywac adresy przez caly program
 
@@ -85,9 +85,9 @@ int main()
             {
                 if(graph != NULL)
                 {
-                    clock.start();
+                    timer.start();
                     vector<unsigned> route = Graph::travellingSalesmanBruteForce(*graph);
-                    clock.stop();
+                    timer.stop();
 
                     // Wyswietlenie trasy
                     unsigned distFromStart = 0;
@@ -103,7 +103,7 @@ int main()
 
                     cout << "Dlugosc trasy: " << distFromStart << endl;
                     cout << endl;
-                    cout << "Czas wykonania algorytmu [s]: " << clock.read() << endl;
+                    cout << "Czas wykonania algorytmu [s]: " << timer.getTime() << endl;
                 }
                 else
                     cout << "Brak wygenerowanych danych" << endl;
@@ -114,9 +114,9 @@ int main()
             {
                 if(graph != NULL)
                 {
-                    clock.start();
+                    timer.start();
                     vector<unsigned> route = Graph::travellingSalesmanBranchAndBound(*graph);
-                    clock.stop();
+                    timer.stop();
 
                     // Wyswietlenie trasy
                     unsigned distFromStart = 0;
@@ -132,7 +132,7 @@ int main()
 
                     cout << "Dlugosc trasy: " << distFromStart << endl;
                     cout << endl;
-                    cout << "Czas wykonania algorytmu [s]: " << clock.read() << endl;
+                    cout << "Czas wykonania algorytmu [s]: " << timer.getTime() << endl;
                 }
                 else
                     cout << "Brak wygenerowanych danych" << endl;
@@ -166,10 +166,10 @@ int main()
                             graph = new ArrayGraph(measureSalesmanCities[i]);
 
                         Graph::randomGenerateFullGraph(*graph, measureSalesmanDistance);
-                        clock.start();
+                        timer.start();
                         Graph::travellingSalesmanBruteForce(*graph);
-                        clock.stop();
-                        measureResults[i] += clock.read();
+                        timer.stop();
+                        measureResults[i] += timer.getTime();
                     }
                 }
 
@@ -220,10 +220,10 @@ int main()
                             graph = new ArrayGraph(measureSalesmanCities[i]);
 
                         Graph::randomGenerateFullGraph(*graph, measureSalesmanDistance);
-                        clock.start();
+                        timer.start();
                         Graph::travellingSalesmanBranchAndBound(*graph);
-                        clock.stop();
-                        measureResults[i] += clock.read();
+                        timer.stop();
+                        measureResults[i] += timer.getTime();
                     }
                 }
 
