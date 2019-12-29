@@ -9,8 +9,9 @@ class BaseAction
     BaseAction(const std::string& actionName);
 
     virtual void run() = 0;
+    std::string getActionName();
 
 
-    private:
+    protected:
     std::string name;
 };

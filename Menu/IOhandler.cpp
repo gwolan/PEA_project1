@@ -1,9 +1,12 @@
-#include <Menu/IOhandler.hpp>
 #include <iostream>
+#include <Menu/IOhandler.hpp>
+#include <Menu/Actions/ExitProgram.hpp>
+#include <Menu/Actions/ReadGraphFromFile.hpp>
 
 
 IOhandler::IOhandler(const std::string& menuContent)
-    : currentSelection(0)
+    : selectedAction(nullptr)
+    , currentSelection(0)
     , menu(menuContent)
 { }
 
@@ -15,6 +18,11 @@ void IOhandler::printMenu()
 char IOhandler::getCurrentMenuSelection()
 {
     return currentSelection;
+}
+
+BaseAction* IOhandler::getSelectedAction()
+{
+    return selectedAction.get();
 }
 
 bool IOhandler::readMenuSelection()
@@ -30,12 +38,13 @@ bool IOhandler::validateInput()
     {
         case '0':
         {
-            std::cout << "Wybrano " << currentSelection << std::endl;
+            selectedAction = std::make_unique<ExitProgram>("");
         }
         break;
         case '1':
         {
-            std::cout << "Wybrano " << currentSelection << std::endl;
+            selectedAction = std::make_unique<ReadGraphFromFile>("Wczytanie grafu z pliku");
+            std::cout << "Wybrano - " << selectedAction->getActionName() << std::endl << std::endl;
         }
         break;
         case '2':
@@ -70,8 +79,6 @@ bool IOhandler::validateInput()
         break;
         default:
         {
-            std::cout << "Wybrano " << currentSelection << std::endl;
-            std::cout << "Wybrana opcja nie istnieje." << std::endl << std::endl;
             return false;
         }
     }

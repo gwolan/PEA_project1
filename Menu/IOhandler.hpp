@@ -14,12 +14,13 @@ class IOhandler
     void printMenu();
     bool readMenuSelection();
     char getCurrentMenuSelection();
+    BaseAction* getSelectedAction();
 
 
     private:
     bool validateInput();
 
-    std::shared_ptr<BaseAction> selectedAction;
+    std::unique_ptr<BaseAction> selectedAction;
     char currentSelection;
     const std::string menu;
 };
