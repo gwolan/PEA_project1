@@ -4,8 +4,8 @@
 #include <Miscellanous/Timer.hpp>
 #include <Menu/IOhandler.hpp>
 #include <Miscellanous/ParametricArray.hpp>
-#include <Graph/ArrayGraph.hpp>
-#include <Graph/ListGraph.hpp>
+#include <Graph/GraphAsArray.hpp>
+#include <Graph/Graph.hpp>
 
 using namespace std;
 
@@ -17,11 +17,6 @@ const int measureSalesmanCities[7] = {4, 6, 8, 11, 14, 18, 22};
 const int measureSalesmanDistance = 400;
 // Przy ILOSCI pomiarow nie majstrowac - chyba ze wiemy, gdzie jeszcze poprawic kod
 // Inaczej mozemy sie spodziewac "cudu nad klawiatura" ;-)
-
-// Wykorzystanie reprezentacji grafu w postaci list sasiedztwa...
-// ...zamiast (domyslnie) macierzy sasiedztwa
-// (wolniejsze obliczenia, mniejsze uzycie pamieci)
-const bool useListGraph = false;
 
 int main()
 {
@@ -57,16 +52,11 @@ int main()
     }
 
     char menuSelection;
-    Graph *graph = NULL;            // <- tu bedziemy zapisywac adresy przez caly program
+    GraphAsArray* graph = NULL;            // <- tu bedziemy zapisywac adresy przez caly program
 
     cout << "PEA Projekt 1 v1.0" << endl;
     cout << "Jan Potocki 2017" << endl;
     cout << "(beerware)" << endl;
-    if(useListGraph)
-        cout << "Uzycie listowej reprezentacji grafu" << endl;
-    else
-        cout << "Uzycie macierzowej reprezentacji grafu" << endl;
-    cout << endl;
 
     char salesmanSelection;
     while(salesmanSelection != '0')
@@ -95,10 +85,7 @@ int main()
                 if(graph != NULL)
                     delete graph;
 
-                if(useListGraph)
-                    graph = new ListGraph(vertex);
-                else
-                    graph = new ArrayGraph(vertex);
+                graph = new GraphAsArray(vertex);
 
                 Graph::randomGenerateFullGraph(*graph, measureSalesmanDistance);
             }
@@ -191,10 +178,7 @@ int main()
 
                         cout << "Pomiar " << measureSalesmanCities[i] << " (" << krok + 1 << " ze 100)..." << endl;
 
-                        if(useListGraph)
-                            graph = new ListGraph(measureSalesmanCities[i]);
-                        else
-                            graph = new ArrayGraph(measureSalesmanCities[i]);
+                        graph = new GraphAsArray(measureSalesmanCities[i]);
 
                         Graph::randomGenerateFullGraph(*graph, measureSalesmanDistance);
                         timer.start();
@@ -245,10 +229,7 @@ int main()
 
                         cout << "Pomiar " << measureSalesmanCities[i] << " (" << krok + 1 << " ze 100)..." << endl;
 
-                        if(useListGraph)
-                            graph = new ListGraph(measureSalesmanCities[i]);
-                        else
-                            graph = new ArrayGraph(measureSalesmanCities[i]);
+                        graph = new GraphAsArray(measureSalesmanCities[i]);
 
                         Graph::randomGenerateFullGraph(*graph, measureSalesmanDistance);
                         timer.start();
@@ -293,10 +274,7 @@ int main()
                     if(graph != NULL)
                         delete graph;
 
-                    if(useListGraph)
-                        graph = new ListGraph(vertex);
-                    else
-                        graph = new ArrayGraph(vertex);
+                    graph = new GraphAsArray(vertex);
 
                     for(int i = 0; i < vertex; i++)
                     {

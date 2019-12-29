@@ -5,23 +5,7 @@
 #include <queue>
 #include <iostream>
 
-
-Graph::Graph()
-{
-    //ctor
-}
-
-Graph::~Graph()
-{
-    //dtor
-}
-
-unsigned Graph::getVertexNumber()
-{
-    return vertexNumber;
-}
-
-void Graph::randomGenerateFullGraph(Graph &graph, unsigned maxWeight)
+void Graph::randomGenerateFullGraph(GraphAsArray &graph, unsigned maxWeight)
 {
     srand(time(NULL));
 
@@ -40,7 +24,7 @@ void Graph::randomGenerateFullGraph(Graph &graph, unsigned maxWeight)
     }
 }
 
-std::vector<unsigned> Graph::travellingSalesmanBruteForce(Graph &graph)
+std::vector<unsigned> Graph::travellingSalesmanBruteForce(GraphAsArray &graph)
 {
     // ALGORYTM przegladu zupelnego
     // Implementacja: Jan Potocki 2017
@@ -104,12 +88,21 @@ std::vector<unsigned> Graph::travellingSalesmanBruteForce(Graph &graph)
     return optimal;
 }
 
-std::vector<unsigned> Graph::travellingSalesmanBranchAndBound(Graph &graph)
+std::vector<unsigned> Graph::travellingSalesmanBranchAndBound(GraphAsArray &graph)
 {
     // ALGORYTM pracujacy w oparciu o kolejke priorytetowa i niejawnie utworzone drzewo
     // Zrodlo: www.ii.uni.wroc.pl/~prz/2011lato/ah/opracowania/met_podz_ogr.opr.pdf
     // Autor: Mateusz Lyczek 2011
     // Implementacja: Jan Potocki 2017
+
+    struct RouteComparison
+    {
+        bool operator() (const std::vector<unsigned>& lhs, const std::vector<unsigned>& rhs) const
+        {
+            return (lhs.at(0) > rhs.at(0));
+        }
+    };
+
     std::priority_queue<std::vector<unsigned>, std::vector<std::vector<unsigned> >, RouteComparison> routeQueue;
     std::vector<unsigned> optimalRoute;     // Tu bedziemy zapisywac optymalne (w danej chwili) rozwiazanie
     int optimalRouteLength = -1;            // -1 - bedziemy odtad uznawac, ze to jest nieskonczonosc ;-)

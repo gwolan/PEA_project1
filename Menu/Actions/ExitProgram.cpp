@@ -6,5 +6,4 @@ ExitProgram::ExitProgram(const std::string& actionName)
     : BaseAction(actionName)
 { }
 
-void ExitProgram::run()
-{ }
+void ExitProgram::run() { }

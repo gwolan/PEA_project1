@@ -1,10 +1,9 @@
-#include <Graph/ArrayGraph.hpp>
+#include <Graph/GraphAsArray.hpp>
 #include <iostream>
 
 
-ArrayGraph::ArrayGraph(unsigned vertexNumber)
+GraphAsArray::GraphAsArray(unsigned vertexNumber)
 {
-    //ctor
     this->vertexNumber = vertexNumber;
     graphMatrix = new unsigned*[vertexNumber];
     graphArray = new unsigned[vertexNumber*vertexNumber];
@@ -20,14 +19,14 @@ ArrayGraph::ArrayGraph(unsigned vertexNumber)
     }
 }
 
-ArrayGraph::~ArrayGraph()
+GraphAsArray::~GraphAsArray()
 {
     //dtor
     delete graphArray;
     delete graphMatrix;
 }
 
-bool ArrayGraph::addEdge(unsigned v, unsigned w, unsigned weight)
+bool GraphAsArray::addEdge(unsigned v, unsigned w, unsigned weight)
 {
     if(weight >= 1000)
         // Waga krawedzi musi byc mniejsza od 1000
@@ -42,7 +41,7 @@ bool ArrayGraph::addEdge(unsigned v, unsigned w, unsigned weight)
     }
 }
 
-bool ArrayGraph::removeEdge(unsigned v, unsigned w)
+bool GraphAsArray::removeEdge(unsigned v, unsigned w)
 {
     if(graphMatrix[v][w] == 0)
         return false;
@@ -53,12 +52,17 @@ bool ArrayGraph::removeEdge(unsigned v, unsigned w)
     }
 }
 
-unsigned ArrayGraph::getWeight(unsigned v, unsigned w)
+unsigned GraphAsArray::getWeight(unsigned v, unsigned w)
 {
     return graphMatrix[v][w];
 }
 
-void ArrayGraph::displayGraph()
+unsigned GraphAsArray::getVertexNumber()
+{
+    return vertexNumber;
+}
+
+void GraphAsArray::displayGraph()
 {
     for(int i = 0; i < vertexNumber; i++)
     {
