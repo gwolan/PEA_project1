@@ -1,5 +1,7 @@
 #pragma once
 
+#include <fstream>
+#include <memory>
 #include <Menu/Actions/BaseAction.hpp>
 
 
@@ -11,7 +13,15 @@ class ReadGraphFromFile : public BaseAction
     ReadGraphFromFile(const std::string& actionName);
 
     void run();
-    void init(GraphAsArray* graphToProcess);
+    void init(std::unique_ptr<GraphAsArray>& graphAsArray);
 
-    GraphAsArray* graph;
+
+    private:
+    void readVertexCountIfPossible();
+    void fillGraphAdjacencyMatrix();
+
+    std::unique_ptr<GraphAsArray>* graph;
+    std::string tspDataFileContent;
+    std::ifstream tspDataFile;
+    uint32_t vertexCount;
 };

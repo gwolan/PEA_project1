@@ -9,4 +9,5 @@ class ExitProgram : public BaseAction
     ExitProgram(const std::string& actionName);
 
     void run();
+    void init(std::unique_ptr<GraphAsArray>& graphAsArray);
 };

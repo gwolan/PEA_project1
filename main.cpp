@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <cstdlib>
+#include <memory>
 #include <Miscellanous/Timer.hpp>
 #include <Menu/IOhandler.hpp>
 #include <Miscellanous/ParametricArray.hpp>
@@ -21,6 +22,8 @@ const int measureSalesmanDistance = 400;
 int main()
 {
     Timer timer;
+
+    std::unique_ptr<GraphAsArray> graphArray(nullptr);
     std::string menuContent(std::string("PEA Projekt nr 1: Travelling Salesman Problem\n") +
                             std::string("Autor: Grzegorz Wolanski\n\n") +
                             std::string("Menu:\n") +
@@ -43,6 +46,7 @@ int main()
         
         if(ioHandler.readMenuSelection())
         {
+            ioHandler.getSelectedAction()->init(graphArray);
             ioHandler.getSelectedAction()->run();
         }
         else

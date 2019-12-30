@@ -1,4 +1,3 @@
-#include <fstream>
 #include <iostream>
 #include <Menu/Actions/ReadGraphFromFile.hpp>
 #include <Graph/GraphAsArray.hpp>
@@ -6,49 +5,62 @@
 
 ReadGraphFromFile::ReadGraphFromFile(const std::string& actionName)
     : BaseAction(actionName)
+    , graph(nullptr)
+    , tspDataFileContent()
+    , tspDataFile()
+    , vertexCount(0)
 { }
 
-void ReadGraphFromFile::init(GraphAsArray* graphToProcess)
+void ReadGraphFromFile::init(std::unique_ptr<GraphAsArray>& graphAsArray)
 {
-    graph = graphToProcess;
+    graph = &graphAsArray;
+
+    tspDataFile.open("tsp_data.txt");
+    readVertexCountIfPossible();
 }
 
 void ReadGraphFromFile::run()
 {
-    std::string tspDataFileContent;
-    std::ifstream tspDataFile;
-
-    tspDataFile.open("tsp_data.txt");
     if(tspDataFile.is_open())
     {
-        tspDataFile >> tspDataFileContent;
-        int vertex = atoi(tspDataFileContent.c_str());
+        // if Graph is initialized, reset it to default
+        *graph = std::make_unique<GraphAsArray>(vertexCount);
 
-        if(graph != NULL)
-            delete graph;
-
-        graph = new GraphAsArray(vertex);
-
-        for(int i = 0; i < vertex; i++)
-        {
-            for(int j = 0; j < vertex; j++)
-            {
-                tspDataFile >> tspDataFileContent;
-                int weight = atoi(tspDataFileContent.c_str());
-
-                if(i != j)
-                    graph->addEdge(i, j, weight);
-            }
-        }
-
+        fillGraphAdjacencyMatrix();
         tspDataFile.close();
 
-        std::cout << "Wczytano - liczba wierzcholkow: " << vertex << std::endl;
+        std::cout << "Graf pomyslnie wczytany z pliku. Liczba wezlow: " << vertexCount << std::endl;
         std::cout << std::endl;
     }
     else
     {
-        std::cout << "Brak pliku ts_data.txt" << std::endl;
+        std::cout << "Plik \"tsp_data.txt\" nie istnieje!" << std::endl;
         std::cout << std::endl;
+    }
+}
+
+void ReadGraphFromFile::readVertexCountIfPossible()
+{
+    if(tspDataFile.is_open())
+    {
+        tspDataFile >> tspDataFileContent;
+        vertexCount = atoi(tspDataFileContent.c_str());
+    }
+}
+
+void ReadGraphFromFile::fillGraphAdjacencyMatrix()
+{
+    for(std::size_t i = 0; i < vertexCount; i++)
+    {
+        for(std::size_t j = 0; j < vertexCount; j++)
+        {
+            tspDataFile >> tspDataFileContent;
+            uint32_t weight = atoi(tspDataFileContent.c_str());
+
+            if(i != j)
+            {
+                (*graph)->addEdge(i, j, weight);
+            }
+        }
     }
 }

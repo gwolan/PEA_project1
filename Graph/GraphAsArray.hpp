@@ -15,11 +15,9 @@ class GraphAsArray
     unsigned getVertexNumber();
     void displayGraph();
 
-    unsigned vertexNumber;
-
 
     private:
+    unsigned vertexNumber;
     unsigned **graphMatrix;
     unsigned *graphArray;
-
 };

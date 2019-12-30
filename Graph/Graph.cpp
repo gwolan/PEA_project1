@@ -9,9 +9,9 @@ void Graph::randomGenerateFullGraph(GraphAsArray &graph, unsigned maxWeight)
 {
     srand(time(NULL));
 
-    for(int i = 0; i < graph.vertexNumber; i++)
+    for(int i = 0; i < graph.getVertexNumber(); i++)
     {
-        for(int j = 0; j < graph.vertexNumber; j++)
+        for(int j = 0; j < graph.getVertexNumber(); j++)
         {
             if(i != j)
             {
@@ -34,7 +34,7 @@ std::vector<unsigned> Graph::travellingSalesmanBruteForce(GraphAsArray &graph)
 
     // Generowanie "spisu" wierzcholkow
     // (od razu w odpowiedniej kolejnosci dla next_permutation)
-    for(int i = 1; i < graph.vertexNumber; i++)
+    for(int i = 1; i < graph.getVertexNumber(); i++)
         vertexArray.push_back(i);
 
     // Petla dodajaca kolejne permutacje do tablicy
@@ -124,7 +124,7 @@ std::vector<unsigned> Graph::travellingSalesmanBranchAndBound(GraphAsArray &grap
         // Sprawdzenie, czy rozwiazanie jest warte rozwijania, czy odrzucic
         if(optimalRouteLength == -1 || currentRoute.at(0) < optimalRouteLength)
         {
-            for(int i = 0; i < graph.vertexNumber; i++)
+            for(int i = 0; i < graph.getVertexNumber(); i++)
             {
                 // Petla wykonywana dla kazdego potomka ropatrywanego wlasnie rozwiazania w drzewie
                 // Ustalenie, czy dany wierzcholek mozna jeszcze wykorzystac, czy juz zostal uzyty
@@ -146,7 +146,7 @@ std::vector<unsigned> Graph::travellingSalesmanBranchAndBound(GraphAsArray &grap
                 nextRoute.push_back(i);
 
                 // Dalej bedziemy postepowac roznie...
-                if(nextRoute.size() > graph.vertexNumber)
+                if(nextRoute.size() > graph.getVertexNumber())
                 {
                     // Doszlismy wlasnie do liscia
                     // Dodajemy droge powrotna, nie musimy nic szacowac
@@ -179,7 +179,7 @@ std::vector<unsigned> Graph::travellingSalesmanBranchAndBound(GraphAsArray &grap
 
                     // Reszte szacujemy...
                     // Pomijamy od razu wierzcholek startowy
-                    for(int j = 1; j < graph.vertexNumber; j++)
+                    for(int j = 1; j < graph.getVertexNumber(); j++)
                     {
                         // Odrzucenie wierzcholkow juz umieszczonych na trasie
                         bool vertexUsed = false;
@@ -195,7 +195,7 @@ std::vector<unsigned> Graph::travellingSalesmanBranchAndBound(GraphAsArray &grap
                             continue;
 
                         int minEdge = -1;
-                        for(int k = 0; k < graph.vertexNumber; k++)
+                        for(int k = 0; k < graph.getVertexNumber(); k++)
                         {
                             // Odrzucenie krawedzi do wierzcholka 0 przy ostatnim wierzcholku w czesciowym rozwiazaniu
                             // Wyjatkiem jest ostatnia mozliwa krawedz

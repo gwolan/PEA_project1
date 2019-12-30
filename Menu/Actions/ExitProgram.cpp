@@ -7,3 +7,5 @@ ExitProgram::ExitProgram(const std::string& actionName)
 { }
 
 void ExitProgram::run() { }
+
+void ExitProgram::init(std::unique_ptr<GraphAsArray>& graphAsArray) { }
