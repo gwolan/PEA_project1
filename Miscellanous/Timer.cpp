@@ -1,11 +1,6 @@
 #include <Miscellanous/Timer.hpp>
 
 
-Timer::Timer()
-    : begin()
-    , end()
-{ }
-
 void Timer::start()
 {
     begin = std::chrono::system_clock::now();

@@ -5,26 +5,26 @@
 #include <queue>
 #include <iostream>
 
-void Graph::randomGenerateFullGraph(GraphAsArray &graph, unsigned maxWeight)
+void Graph::randomGenerateFullGraph(GraphMatrix &graph, unsigned maxWeight)
 {
     srand(time(NULL));
 
-    for(int i = 0; i < graph.getVertexNumber(); i++)
+    for(int i = 0; i < graph.getVertexCount(); i++)
     {
-        for(int j = 0; j < graph.getVertexNumber(); j++)
+        for(int j = 0; j < graph.getVertexCount(); j++)
         {
             if(i != j)
             {
                 // Bez warunku na krawedzie juz wygenerowane...
-                // ...z tym radzi sobie juz metoda addEdge
+                // ...z tym radzi sobie juz metoda addWeightToMatrix
                 int randomWeight = rand()%maxWeight + 1;
-                graph.addEdge(i, j, randomWeight);
+                graph.addWeightToMatrix(i, j, randomWeight);
             }
         }
     }
 }
 
-std::vector<unsigned> Graph::travellingSalesmanBruteForce(GraphAsArray &graph)
+std::vector<unsigned> Graph::travellingSalesmanBruteForce(GraphMatrix &graph)
 {
     // ALGORYTM przegladu zupelnego
     // Implementacja: Jan Potocki 2017
@@ -34,7 +34,7 @@ std::vector<unsigned> Graph::travellingSalesmanBruteForce(GraphAsArray &graph)
 
     // Generowanie "spisu" wierzcholkow
     // (od razu w odpowiedniej kolejnosci dla next_permutation)
-    for(int i = 1; i < graph.getVertexNumber(); i++)
+    for(int i = 1; i < graph.getVertexCount(); i++)
         vertexArray.push_back(i);
 
     // Petla dodajaca kolejne permutacje do tablicy
@@ -88,7 +88,7 @@ std::vector<unsigned> Graph::travellingSalesmanBruteForce(GraphAsArray &graph)
     return optimal;
 }
 
-std::vector<unsigned> Graph::travellingSalesmanBranchAndBound(GraphAsArray &graph)
+std::vector<unsigned> Graph::travellingSalesmanBranchAndBound(GraphMatrix &graph)
 {
     // ALGORYTM pracujacy w oparciu o kolejke priorytetowa i niejawnie utworzone drzewo
     // Zrodlo: www.ii.uni.wroc.pl/~prz/2011lato/ah/opracowania/met_podz_ogr.opr.pdf
@@ -124,7 +124,7 @@ std::vector<unsigned> Graph::travellingSalesmanBranchAndBound(GraphAsArray &grap
         // Sprawdzenie, czy rozwiazanie jest warte rozwijania, czy odrzucic
         if(optimalRouteLength == -1 || currentRoute.at(0) < optimalRouteLength)
         {
-            for(int i = 0; i < graph.getVertexNumber(); i++)
+            for(int i = 0; i < graph.getVertexCount(); i++)
             {
                 // Petla wykonywana dla kazdego potomka ropatrywanego wlasnie rozwiazania w drzewie
                 // Ustalenie, czy dany wierzcholek mozna jeszcze wykorzystac, czy juz zostal uzyty
@@ -146,7 +146,7 @@ std::vector<unsigned> Graph::travellingSalesmanBranchAndBound(GraphAsArray &grap
                 nextRoute.push_back(i);
 
                 // Dalej bedziemy postepowac roznie...
-                if(nextRoute.size() > graph.getVertexNumber())
+                if(nextRoute.size() > graph.getVertexCount())
                 {
                     // Doszlismy wlasnie do liscia
                     // Dodajemy droge powrotna, nie musimy nic szacowac
@@ -179,7 +179,7 @@ std::vector<unsigned> Graph::travellingSalesmanBranchAndBound(GraphAsArray &grap
 
                     // Reszte szacujemy...
                     // Pomijamy od razu wierzcholek startowy
-                    for(int j = 1; j < graph.getVertexNumber(); j++)
+                    for(int j = 1; j < graph.getVertexCount(); j++)
                     {
                         // Odrzucenie wierzcholkow juz umieszczonych na trasie
                         bool vertexUsed = false;
@@ -195,7 +195,7 @@ std::vector<unsigned> Graph::travellingSalesmanBranchAndBound(GraphAsArray &grap
                             continue;
 
                         int minEdge = -1;
-                        for(int k = 0; k < graph.getVertexNumber(); k++)
+                        for(int k = 0; k < graph.getVertexCount(); k++)
                         {
                             // Odrzucenie krawedzi do wierzcholka 0 przy ostatnim wierzcholku w czesciowym rozwiazaniu
                             // Wyjatkiem jest ostatnia mozliwa krawedz

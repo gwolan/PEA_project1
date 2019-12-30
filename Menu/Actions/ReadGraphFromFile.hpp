@@ -5,22 +5,24 @@
 #include <Menu/Actions/BaseAction.hpp>
 
 
-class GraphAsArray;
+class GraphMatrix;
 
 class ReadGraphFromFile : public BaseAction
 {
     public:
     ReadGraphFromFile(const std::string& actionName);
+    ~ReadGraphFromFile() = default;
 
     void run();
-    void init(std::unique_ptr<GraphAsArray>& graphAsArray);
+    void init(std::unique_ptr<GraphMatrix>& graphMatrix);
 
 
     private:
     void readVertexCountIfPossible();
+    uint32_t readWeight();
     void fillGraphAdjacencyMatrix();
 
-    std::unique_ptr<GraphAsArray>* graph;
+    std::unique_ptr<GraphMatrix>* graph;
     std::string tspDataFileContent;
     std::ifstream tspDataFile;
     uint32_t vertexCount;

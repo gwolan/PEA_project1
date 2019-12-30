@@ -1,6 +1,6 @@
 #include <iostream>
 #include <Menu/Actions/ReadGraphFromFile.hpp>
-#include <Graph/GraphAsArray.hpp>
+#include <Graph/GraphMatrix.hpp>
 
 
 ReadGraphFromFile::ReadGraphFromFile(const std::string& actionName)
@@ -11,9 +11,9 @@ ReadGraphFromFile::ReadGraphFromFile(const std::string& actionName)
     , vertexCount(0)
 { }
 
-void ReadGraphFromFile::init(std::unique_ptr<GraphAsArray>& graphAsArray)
+void ReadGraphFromFile::init(std::unique_ptr<GraphMatrix>& graphMatrix)
 {
-    graph = &graphAsArray;
+    graph = &graphMatrix;
 
     tspDataFile.open("tsp_data.txt");
     readVertexCountIfPossible();
@@ -23,8 +23,7 @@ void ReadGraphFromFile::run()
 {
     if(tspDataFile.is_open())
     {
-        // if Graph is initialized, reset it to default
-        *graph = std::make_unique<GraphAsArray>(vertexCount);
+        *graph = std::make_unique<GraphMatrix>(vertexCount);
 
         fillGraphAdjacencyMatrix();
         tspDataFile.close();
@@ -44,22 +43,26 @@ void ReadGraphFromFile::readVertexCountIfPossible()
     if(tspDataFile.is_open())
     {
         tspDataFile >> tspDataFileContent;
-        vertexCount = atoi(tspDataFileContent.c_str());
+        vertexCount = std::atoi(tspDataFileContent.c_str());
     }
+}
+
+uint32_t ReadGraphFromFile::readWeight()
+{
+    tspDataFile >> tspDataFileContent;
+    return std::atoi(tspDataFileContent.c_str());
 }
 
 void ReadGraphFromFile::fillGraphAdjacencyMatrix()
 {
-    for(std::size_t i = 0; i < vertexCount; i++)
+    for(std::size_t row = 0; row < vertexCount; ++row)
     {
-        for(std::size_t j = 0; j < vertexCount; j++)
+        for(std::size_t column = 0; column < vertexCount; ++column)
         {
-            tspDataFile >> tspDataFileContent;
-            uint32_t weight = atoi(tspDataFileContent.c_str());
-
-            if(i != j)
+            uint32_t weight = readWeight();
+            if(row != column)
             {
-                (*graph)->addEdge(i, j, weight);
+                (*graph)->addWeightToMatrix(row, column, weight);
             }
         }
     }

@@ -4,15 +4,16 @@
 #include <memory>
 
 
-class GraphAsArray;
+class GraphMatrix;
 
 class BaseAction
 {
     public:
     BaseAction(const std::string& actionName);
+    ~BaseAction() = default;
 
     virtual void run() = 0;
-    virtual void init(std::unique_ptr<GraphAsArray>& graphAsArray) = 0;
+    virtual void init(std::unique_ptr<GraphMatrix>& graphMatrix) = 0;
     std::string getActionName();
 
 

@@ -6,7 +6,8 @@
 class Timer
 {
     public:
-    Timer();
+    Timer() = default;
+    ~Timer() = default;
 
     void start();
     void stop();

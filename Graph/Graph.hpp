@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <Miscellanous/ParametricArray.hpp>
-#include <Graph/GraphAsArray.hpp>
+#include <Graph/GraphMatrix.hpp>
 
 
 class Graph
@@ -10,7 +10,7 @@ class Graph
     public:
         Graph() = default;
         ~Graph() = default;
-        static void randomGenerateFullGraph(GraphAsArray &graph, unsigned maxWeight);
-        static std::vector<unsigned> travellingSalesmanBruteForce(GraphAsArray &graph);
-        static std::vector<unsigned> travellingSalesmanBranchAndBound(GraphAsArray &graph);
+        static void randomGenerateFullGraph(GraphMatrix &graph, unsigned maxWeight);
+        static std::vector<unsigned> travellingSalesmanBruteForce(GraphMatrix &graph);
+        static std::vector<unsigned> travellingSalesmanBranchAndBound(GraphMatrix &graph);
 };

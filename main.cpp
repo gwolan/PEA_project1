@@ -5,7 +5,7 @@
 #include <Miscellanous/Timer.hpp>
 #include <Menu/IOhandler.hpp>
 #include <Miscellanous/ParametricArray.hpp>
-#include <Graph/GraphAsArray.hpp>
+#include <Graph/GraphMatrix.hpp>
 #include <Graph/Graph.hpp>
 
 using namespace std;
@@ -23,8 +23,9 @@ int main()
 {
     Timer timer;
 
-    std::unique_ptr<GraphAsArray> graphArray(nullptr);
-    std::string menuContent(std::string("PEA Projekt nr 1: Travelling Salesman Problem\n") +
+    std::unique_ptr<GraphMatrix> graphMatrix(nullptr);
+    std::string menuContent(std::string("\n====================\n") +
+                            std::string("PEA Projekt nr 1: Travelling Salesman Problem\n") +
                             std::string("Autor: Grzegorz Wolanski\n\n") +
                             std::string("Menu:\n") +
                             std::string("1. Wczytaj graf z pliku.\n") +
@@ -46,7 +47,7 @@ int main()
         
         if(ioHandler.readMenuSelection())
         {
-            ioHandler.getSelectedAction()->init(graphArray);
+            ioHandler.getSelectedAction()->init(graphMatrix);
             ioHandler.getSelectedAction()->run();
         }
         else
@@ -56,7 +57,7 @@ int main()
     }
 
     char menuSelection;
-    GraphAsArray* graph = NULL;            // <- tu bedziemy zapisywac adresy przez caly program
+    GraphMatrix* graph = NULL;            // <- tu bedziemy zapisywac adresy przez caly program
 
     cout << "PEA Projekt 1 v1.0" << endl;
     cout << "Jan Potocki 2017" << endl;
@@ -89,7 +90,7 @@ int main()
                 if(graph != NULL)
                     delete graph;
 
-                graph = new GraphAsArray(vertex);
+                graph = new GraphMatrix(vertex);
 
                 Graph::randomGenerateFullGraph(*graph, measureSalesmanDistance);
             }
@@ -182,7 +183,7 @@ int main()
 
                         cout << "Pomiar " << measureSalesmanCities[i] << " (" << krok + 1 << " ze 100)..." << endl;
 
-                        graph = new GraphAsArray(measureSalesmanCities[i]);
+                        graph = new GraphMatrix(measureSalesmanCities[i]);
 
                         Graph::randomGenerateFullGraph(*graph, measureSalesmanDistance);
                         timer.start();
@@ -233,7 +234,7 @@ int main()
 
                         cout << "Pomiar " << measureSalesmanCities[i] << " (" << krok + 1 << " ze 100)..." << endl;
 
-                        graph = new GraphAsArray(measureSalesmanCities[i]);
+                        graph = new GraphMatrix(measureSalesmanCities[i]);
 
                         Graph::randomGenerateFullGraph(*graph, measureSalesmanDistance);
                         timer.start();
@@ -278,7 +279,7 @@ int main()
                     if(graph != NULL)
                         delete graph;
 
-                    graph = new GraphAsArray(vertex);
+                    graph = new GraphMatrix(vertex);
 
                     for(int i = 0; i < vertex; i++)
                     {
@@ -288,7 +289,7 @@ int main()
                             int weight = atoi(fileInput.c_str());
 
                             if(i != j)
-                                graph->addEdge(i, j, weight);
+                                graph->addWeightToMatrix(i, j, weight);
                         }
                     }
 

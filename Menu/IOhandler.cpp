@@ -2,6 +2,7 @@
 #include <Menu/IOhandler.hpp>
 #include <Menu/Actions/ExitProgram.hpp>
 #include <Menu/Actions/ReadGraphFromFile.hpp>
+#include <Menu/Actions/DisplayGraph.hpp>
 
 
 IOhandler::IOhandler(const std::string& menuContent)
@@ -54,7 +55,8 @@ bool IOhandler::validateInput()
         break;
         case '3':
         {
-            std::cout << "Wybrano " << currentSelection << std::endl;
+            selectedAction = std::make_unique<DisplayGraph>("Wyświetlenie grafu (macierz sasiedztwa)");
+            std::cout << "Wybrano - " << selectedAction->getActionName() << std::endl << std::endl;
         }
         break;
         case '4':
