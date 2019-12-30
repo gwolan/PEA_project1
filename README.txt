@@ -3,7 +3,7 @@ Wolański Grzegorz
 188463
 
 Tytuł:
-
+PEA Projekt 1 - TSP na bazie algorytmów Branch&Bound oraz przeglądu zupełnego
 
 Instrukcja kompilacji i uruchomienia:
 1. W bieżącym katalogu roboczym stworzyć folder dla pliku wykonywalnego.
