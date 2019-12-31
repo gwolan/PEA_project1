@@ -50,10 +50,6 @@ int main()
             ioHandler.getSelectedAction()->init(graphMatrix);
             ioHandler.getSelectedAction()->run();
         }
-        else
-        {
-            std::cout << "Wybrana opcja nie istnieje." << std::endl << std::endl;
-        }
     }
 
     char menuSelection;

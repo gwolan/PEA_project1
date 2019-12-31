@@ -3,6 +3,7 @@
 #include <Menu/Actions/ExitProgram.hpp>
 #include <Menu/Actions/ReadGraphFromFile.hpp>
 #include <Menu/Actions/DisplayGraph.hpp>
+#include <Menu/Actions/GenerateRandomGraph.hpp>
 
 
 IOhandler::IOhandler(const std::string& menuContent)
@@ -39,51 +40,47 @@ bool IOhandler::validateInput()
     {
         case '0':
         {
-            selectedAction = std::make_unique<ExitProgram>("");
+            selectedAction = std::make_unique<ExitProgram>("Wyjście z programu");
         }
         break;
         case '1':
         {
             selectedAction = std::make_unique<ReadGraphFromFile>("Wczytanie grafu z pliku");
-            std::cout << "Wybrano - " << selectedAction->getActionName() << std::endl << std::endl;
         }
         break;
         case '2':
         {
-            std::cout << "Wybrano " << currentSelection << std::endl;
+            selectedAction = std::make_unique<GenerateRandomGraph>("Wygenerowanie losowego grafu");
         }
         break;
         case '3':
         {
             selectedAction = std::make_unique<DisplayGraph>("Wyświetlenie grafu (macierz sasiedztwa)");
-            std::cout << "Wybrano - " << selectedAction->getActionName() << std::endl << std::endl;
         }
         break;
         case '4':
         {
-            std::cout << "Wybrano " << currentSelection << std::endl;
         }
         break;
         case '5':
         {
-            std::cout << "Wybrano " << currentSelection << std::endl;
         }
         break;
         case '6':
         {
-            std::cout << "Wybrano " << currentSelection << std::endl;
         }
         break;
         case '7':
         {
-            std::cout << "Wybrano " << currentSelection << std::endl;
         }
         break;
         default:
         {
+            std::cout << "Wybrana opcja nie istnieje." << std::endl;
             return false;
         }
     }
 
+    std::cout << "Wybrano - " << selectedAction->getActionName() << std::endl << std::endl;
     return true;
 }
