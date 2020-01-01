@@ -4,6 +4,8 @@
 #include <Menu/Actions/ReadGraphFromFile.hpp>
 #include <Menu/Actions/DisplayGraph.hpp>
 #include <Menu/Actions/GenerateRandomGraph.hpp>
+#include <Menu/Actions/PerformBruteForce.hpp>
+#include <Menu/Actions/PerformBranchAndBound.hpp>
 
 
 IOhandler::IOhandler(const std::string& menuContent)
@@ -60,10 +62,12 @@ bool IOhandler::validateInput()
         break;
         case '4':
         {
+            selectedAction = std::make_unique<PerformBruteForce>("Wykonanie przeglądu zupelnego metoda Brute Force");
         }
         break;
         case '5':
         {
+            selectedAction = std::make_unique<PerformBranchAndBound>("Znalezienie optymalnej sciezki algorytmem B&B");
         }
         break;
         case '6':
