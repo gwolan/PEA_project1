@@ -80,7 +80,7 @@ bool IOhandler::validateInput()
         break;
         default:
         {
-            std::cout << "Wybrana opcja nie istnieje." << std::endl;
+            std::cout << "Wybrana opcja nie istnieje." << std::endl << std::endl;
             return false;
         }
     }
