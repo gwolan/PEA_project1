@@ -1,165 +1,158 @@
 #include <numeric>
+#include <algorithm>
 #include <Algorithms/BranchAndBound.hpp>
 #include <Graph/GraphMatrix.hpp>
-#include <Miscellanous/Timer.hpp>
 
 
 BranchAndBound::BranchAndBound()
     : graph(nullptr)
     , INFINITY(-1)
+    , STARTING_VERTEX(0)
     , bestPathLength(INFINITY)
     , bestSequence()
 { }
 
-std::vector<uint32_t> BranchAndBound::performBranchAndBoundOnGraph(std::unique_ptr<GraphMatrix>& graphMatrix, Timer& timer)
+std::vector<uint32_t> BranchAndBound::performBranchAndBoundOnGraph(std::unique_ptr<GraphMatrix>& graphMatrix)
 {
     graph = &graphMatrix;
 
-    timer.start();
-    std::vector<uint32_t> currentPath;     // Niejawne tworzenie drzewa, tu bedzie korzen
-    std::vector<uint32_t> verticies((*graph)->getVertexCount());
-    std::iota(verticies.begin(), verticies.end(), 0);
+    // resource allocation
 
+    // will hold patial path from the root of the solutions tree, first element contains path cost
+    std::vector<uint32_t> currentBestPartialPath;
+
+    // holds verticies indexes
+    std::vector<uint32_t> verticies((*graph)->getVertexCount());
+    std::iota(verticies.begin(), verticies.end(), STARTING_VERTEX);
+
+    // solutions tree is represented by priority queue (best first solution)
     PathQueue pathQueue;
 
-    startAlgorithm(verticies, currentPath, pathQueue);
+    startAlgorithm(verticies, currentBestPartialPath, pathQueue);
 
-    timer.stop();
     return bestSequence;
 }
 
 void BranchAndBound::startAlgorithm(std::vector<uint32_t>& verticies,
-                                    std::vector<uint32_t>& currentPath, BranchAndBound::PathQueue& pathQueue)
+                                    std::vector<uint32_t>& currentBestPartialPath, BranchAndBound::PathQueue& pathQueue)
 {
-    // UMOWA
-    // Pierwszy element wektora to dlugosc trasy (trzeba ustawic "z palca"!)
-    // Kolejne to wierzcholki na trasie
-    currentPath.push_back(0);              // Poczatkowe oszacowanie nie ma znaczenia
-    currentPath.push_back(0);              // Wierzcholek startowy (korzen drzewa rozwiazan)
-    pathQueue.push(currentPath);          // Dodanie do kolejki korzenia
+    // solutions tree root will hold basic path with starting point only
+    currentBestPartialPath.push_back(0);
+    currentBestPartialPath.push_back(STARTING_VERTEX);
+    pathQueue.push(currentBestPartialPath);
 
+    // algorithm will loop until no better solution can be found
     while(!pathQueue.empty())
     {
-        // Przypisanie korzenia do dalszej roboty
-        currentPath = pathQueue.top();
+        // load currently best solution, ignore all other solutions
+        currentBestPartialPath = pathQueue.top();
         pathQueue.pop();
 
-        // Sprawdzenie, czy rozwiazanie jest warte rozwijania, czy odrzucic
-        if(isGivenPathPromising(currentPath))
+        // if better solution can be found, start calculations
+        if(isGivenPathPromising(currentBestPartialPath.front(), bestPathLength))
         {
-            performCalculations(verticies, currentPath, pathQueue);
+            performCalculations(verticies, currentBestPartialPath, pathQueue);
         }
         else
         {
+            // best solution already found, terminate
             break;
         }
     }
 }
 
 void BranchAndBound::performCalculations(std::vector<uint32_t>& verticies,
-                                         std::vector<uint32_t>& currentPath, BranchAndBound::PathQueue& pathQueue)
+                                         std::vector<uint32_t>& currentBestPartialPath, BranchAndBound::PathQueue& pathQueue)
 {
-    for(auto verticiesIt = verticies.begin(); verticiesIt != verticies.end(); ++verticiesIt)
+    for(auto nextPossibleVertex = verticies.begin(); nextPossibleVertex != verticies.end(); ++nextPossibleVertex)
     {
-        // Petla wykonywana dla kazdego potomka ropatrywanego wlasnie rozwiazania w drzewie
-        // Ustalenie, czy dany wierzcholek mozna jeszcze wykorzystac, czy juz zostal uzyty
-        if(wasVertexAlreadyChecked(currentPath, *verticiesIt))
+        // hot looping to evaluate not visited vertex
+        if(wasVertexAlreadyChecked(std::next(currentBestPartialPath.cbegin()), 
+                                             currentBestPartialPath.cend(), *nextPossibleVertex))
         {
             continue;
         }
 
-        // Niejawne utworzenie nowego wezla reprezuntujacego rozpatrywane rozwiazanie...
-        std::vector<uint32_t> newPath = currentPath;
-        newPath.push_back(*verticiesIt);
+        // new partial paths contain next possible vertex to choose
+        std::vector<uint32_t> newPartialPath = currentBestPartialPath;
+        newPartialPath.push_back(*nextPossibleVertex);
 
-        // Dalej bedziemy postepowac roznie...
-        if(isCurrentlyEvaluatedPathEnding(newPath, verticies))
+        if(isCurrentlyEvaluatedPathEnding(newPartialPath, verticies))
         {
-            finalizeCalculations(newPath);
+            // calculate overall Hamilton cycle cost and compare path to currently best known solution
+            finalizeCalculations(newPartialPath);
         }
         else
         {
-            performNextIteration(verticies, currentPath, newPath, *verticiesIt);
+            // current path is not complete, continue calculations
+            performNextIteration(verticies, currentBestPartialPath, newPartialPath);
 
-            // ...i teraz zastanawiamy sie co dalej
-            if(isGivenPathPromising(newPath))
+            // push promising partial path on the tree
+            if(isGivenPathPromising(newPartialPath.front(), bestPathLength))
             {
-                pathQueue.push(newPath);
+                pathQueue.push(newPartialPath);
             }
         }
     }
 }
 
-void BranchAndBound::performNextIteration(std::vector<uint32_t>& verticies, 
-                                          std::vector<uint32_t>& currentPath,
-                                          std::vector<uint32_t>& newPath,
-                                          uint32_t currentVertex)
+void BranchAndBound::performNextIteration(std::vector<uint32_t>& verticies,
+                                          std::vector<uint32_t>& currentBestPartialPath,
+                                          std::vector<uint32_t>& newPartialPath)
 {
-            // Liczenie tego, co juz wiemy, od nowa...
-            // (dystans od poczatku)
-            newPath.front() = calculatePathsCost(newPath);
+    // calculate path cost after adding next possible vertex
+    newPartialPath.front() = calculatePathsCost(newPartialPath);
 
-            // Reszte szacujemy...
-            // Pomijamy od razu wierzcholek startowy
-            for(auto verticiesIt = std::next(verticies.begin()); verticiesIt != verticies.end(); ++verticiesIt)
+    // calculate overall minimal possible solution from current partial solution
+    for(auto edgeBegin = std::next(verticies.begin()); edgeBegin != verticies.end(); ++edgeBegin)
+    {
+        // hot looping to evaluate not visited vertex
+        if(wasVertexAlreadyChecked(std::next(currentBestPartialPath.cbegin()),
+                                             currentBestPartialPath.cend(), *edgeBegin))
+        {
+            continue;
+        }
+
+        // find minimal possible solution (paths cost) for current partial path
+        // result - find most promising partial path
+        int32_t cheapestEdgeCost = INFINITY;
+        for(auto edgeEnd = verticies.begin(); edgeEnd != verticies.end(); ++edgeEnd)
+        {
+            // hot looping if:
+            // - calculated edge joins current partial path with path end (starting point)
+            // - edge end defines vertex belonging to current partial path
+            // - both verticies do not create an edge
+            if( isEvaluatedEdgeClosingHamiltonCycle(*edgeBegin, *edgeEnd, newPartialPath.back())                ||
+                wasVertexAlreadyChecked(std::next(newPartialPath.cbegin(), 2), newPartialPath.cend(), *edgeEnd) ||
+               !doVerticiesCreateEdge(*edgeBegin, *edgeEnd))
             {
-                // Odrzucenie wierzcholkow juz umieszczonych na trasie
-                if(wasVertexAlreadyChecked(currentPath, *verticiesIt))
-                {
-                    continue;
-                }
-
-                int32_t minEdge = INFINITY;
-                for(auto vertex = verticies.begin(); vertex != verticies.end(); ++vertex)
-                {
-                    // Odrzucenie krawedzi do wierzcholka 0 przy ostatnim wierzcholku w czesciowym rozwiazaniu
-                    // Wyjatkiem jest ostatnia mozliwa krawedz
-                    if(*verticiesIt == currentVertex && *vertex == 0)
-                        continue;
-
-                    // Odrzucenie krawedzi do wierzcholka umieszczonego juz na rozwazanej trasie
-                    bool vertexUsed = false;
-                    for(int32_t l = 2; l < newPath.size(); l++)
-                    {
-                        if(*vertex == newPath.at(l))
-                        {
-                            vertexUsed = true;
-                            break;
-                        }
-                    }
-                    if(vertexUsed)
-                        continue;
-
-                    // Odrzucenie samego siebie
-                    if(*vertex == *verticiesIt)
-                        continue;
-
-                    // Znalezienie najkrotszej mozliwej jeszcze do uzycia krawedzi
-                    uint32_t consideredLength = (*graph)->getWeight(*verticiesIt, *vertex);
-
-                    if(minEdge == INFINITY)
-                        minEdge = consideredLength;
-                    else if(minEdge > consideredLength)
-                        minEdge = consideredLength;
-                }
-                newPath.at(0) += minEdge;
+                continue;
             }
+
+            // calculate the cheapest edge for potential paths next possible steps
+            uint32_t currentEdgeCost = (*graph)->getWeight(*edgeBegin, *edgeEnd);
+            if(isGivenPathPromising(currentEdgeCost, cheapestEdgeCost))
+            {
+                cheapestEdgeCost = currentEdgeCost;
+            }
+        }
+
+        // add cheapest potential edge cost to current partial solution
+        newPartialPath.front() += cheapestEdgeCost;
+    }
 }
 
-void BranchAndBound::finalizeCalculations(std::vector<uint32_t>& currentPath)
+void BranchAndBound::finalizeCalculations(std::vector<uint32_t>& pathWithSolution)
 {
-    // Doszlismy wlasnie do liscia
-    // Dodajemy droge powrotna, nie musimy nic szacowac
-    // (wszystko juz wiemy)
-    currentPath.push_back(0);
-    currentPath.front() = calculatePathsCost(currentPath);
+    pathWithSolution.push_back(STARTING_VERTEX);
+    pathWithSolution.front() = calculatePathsCost(pathWithSolution);
 
-    assignNewBestPathIfPossible(currentPath);
+    assignNewBestPathIfPossible(pathWithSolution);
 }
 
 void BranchAndBound::assignNewBestPathIfPossible(std::vector<uint32_t>& possibleBestPath)
 {
-    if(bestPathLength == INFINITY || possibleBestPath.front() < bestPathLength)
+    if(isGivenPathPromising(possibleBestPath.front(), bestPathLength))
     {
         bestPathLength = possibleBestPath.front();
         possibleBestPath.erase(possibleBestPath.begin());
@@ -167,19 +160,10 @@ void BranchAndBound::assignNewBestPathIfPossible(std::vector<uint32_t>& possible
     }
 }
 
-bool BranchAndBound::wasVertexAlreadyChecked(const std::vector<uint32_t>& currentPath, const uint32_t vertex)
+template<class Iterator>
+bool BranchAndBound::wasVertexAlreadyChecked(Iterator begin, Iterator end, const uint32_t vertex)
 {
-    for(auto vertexIt  = std::next(currentPath.begin());
-             vertexIt != currentPath.cend();
-           ++vertexIt)
-    {
-        if(*vertexIt == vertex)
-        {
-            return true;
-        }
-    }
-
-    return false;
+    return std::find(begin, end, vertex) != end;
 }
 
 bool BranchAndBound::isCurrentlyEvaluatedPathEnding(const std::vector<uint32_t>& evaluatedPath,
@@ -190,20 +174,33 @@ bool BranchAndBound::isCurrentlyEvaluatedPathEnding(const std::vector<uint32_t>&
 
 uint32_t BranchAndBound::calculatePathsCost(const std::vector<uint32_t>& path)
 {
-    // path cost = sum of all weights of the edges
+    // path cost = sum of all weights of the edges between nodes
     uint32_t cost = 0;
 
     for(auto vertexIt  = std::next(path.cbegin());
              vertexIt != std::prev(path.cend());
            ++vertexIt)
     {
-        cost += (*graph)->getWeight(*vertexIt, *std::next(vertexIt));
+        uint32_t row = *vertexIt;
+        uint32_t column = *std::next(vertexIt);
+
+        cost += (*graph)->getWeight(row, column);
     }
 
     return cost;
 }
 
-bool BranchAndBound::isGivenPathPromising(const std::vector<uint32_t>& promisingPath)
+bool BranchAndBound::isEvaluatedEdgeClosingHamiltonCycle(const uint32_t edgeBegin, const uint32_t edgeEnd, const uint32_t lastVertexInPartialPath)
 {
-    return (bestPathLength == INFINITY) || (promisingPath.front() < bestPathLength);
+    return (edgeBegin == lastVertexInPartialPath) && (edgeEnd == STARTING_VERTEX);
+}
+
+bool BranchAndBound::doVerticiesCreateEdge(const uint32_t edgeBegin, const uint32_t edgeEnd)
+{
+    return edgeEnd != edgeBegin;
+}
+
+bool BranchAndBound::isGivenPathPromising(const uint32_t currentCost, const uint32_t upperBound)
+{
+    return (upperBound == INFINITY) || (currentCost < upperBound);
 }

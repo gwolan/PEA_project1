@@ -21,7 +21,10 @@ void PerformBruteForce::run()
 {
     if(graph->get())
     {
-        std::vector<uint32_t> resultPath = bruteForce.performBruteForceOnGraph(*graph, timer);
+        timer.start();
+        std::vector<uint32_t> resultPath = bruteForce.performBruteForceOnGraph(*graph);
+        timer.stop();
+
         printResults(resultPath);
     }
     else

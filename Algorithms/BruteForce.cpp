@@ -2,18 +2,16 @@
 #include <numeric>
 #include <Algorithms/BruteForce.hpp>
 #include <Graph/GraphMatrix.hpp>
-#include <Miscellanous/Timer.hpp>
 
 
 BruteForce::BruteForce()
     : graph(nullptr)
 { }
 
-std::vector<uint32_t> BruteForce::performBruteForceOnGraph(std::unique_ptr<GraphMatrix>& graphMatrix, Timer& timer)
+std::vector<uint32_t> BruteForce::performBruteForceOnGraph(std::unique_ptr<GraphMatrix>& graphMatrix)
 {
-    timer.start();
-
     graph = &graphMatrix;
+
     std::vector<Path> listOfPossiblePaths;
     std::vector<uint32_t> verticies((*graph)->getVertexCount() - 1);
 
@@ -34,7 +32,6 @@ std::vector<uint32_t> BruteForce::performBruteForceOnGraph(std::unique_ptr<Graph
         bestSequence.push_back(vertex.first);
     }
 
-    timer.stop();
     return bestSequence;
 }
 
@@ -94,7 +91,7 @@ BruteForce::Path& BruteForce::findShortestPath(std::vector<Path>& listOfPossible
 
 uint32_t BruteForce::calculatePathsCost(Path& currentPath)
 {
-    // path cost = sum of all weights of the edges
+    // path cost = sum of all weights of the edges between nodes
     uint32_t cost = 0;
 
     for(auto& vertexToWeight : currentPath)

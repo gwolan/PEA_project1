@@ -6,7 +6,6 @@
 
 
 class GraphMatrix;
-class Timer;
 
 class BruteForce
 {
@@ -14,7 +13,7 @@ class BruteForce
     BruteForce();
     ~BruteForce() = default;
 
-    std::vector<uint32_t> performBruteForceOnGraph(std::unique_ptr<GraphMatrix>& graphMatrix, Timer& timer);
+    std::vector<uint32_t> performBruteForceOnGraph(std::unique_ptr<GraphMatrix>& graphMatrix);
 
 
     private:

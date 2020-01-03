@@ -44,7 +44,7 @@ int main()
     while(ioHandler.getCurrentMenuSelection() != '0')
     {
         ioHandler.printMenu();
-        
+
         if(ioHandler.readMenuSelection())
         {
             ioHandler.getSelectedAction()->init(graphMatrix);
@@ -52,7 +52,7 @@ int main()
         }
     }
 
-    char menuSelection;
+
     GraphMatrix* graph = NULL;            // <- tu bedziemy zapisywac adresy przez caly program
 
     cout << "PEA Projekt 1 v1.0" << endl;
