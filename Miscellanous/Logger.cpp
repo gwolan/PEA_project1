@@ -1,6 +1,7 @@
 #include <Miscellanous/Logger.hpp>
 
 
+// prologue can be a class name for example or empty string
 Logger::Logger(const std::string& prologue)
     : prefix(prologue)
     , logFileName("logs.txt")

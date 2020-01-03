@@ -8,8 +8,6 @@ BranchAndBound::BranchAndBound()
     : graph(nullptr)
     , INFINITY(-1)
     , STARTING_VERTEX(0)
-    , bestPathLength(INFINITY)
-    , bestSequence()
 { }
 
 std::vector<uint32_t> BranchAndBound::performBranchAndBoundOnGraph(std::unique_ptr<GraphMatrix>& graphMatrix)
@@ -18,7 +16,11 @@ std::vector<uint32_t> BranchAndBound::performBranchAndBoundOnGraph(std::unique_p
 
     // resource allocation
 
-    // will hold patial path from the root of the solutions tree, first element contains path cost
+    // maps best solutions cost to path
+    BestSolutionHolder bestSolutionHolder;
+    bestSolutionHolder.first = INFINITY;
+
+    // will hold partial path from the root of the solutions tree, first element contains path cost
     std::vector<uint32_t> currentBestPartialPath;
 
     // holds verticies indexes
@@ -26,32 +28,33 @@ std::vector<uint32_t> BranchAndBound::performBranchAndBoundOnGraph(std::unique_p
     std::iota(verticies.begin(), verticies.end(), STARTING_VERTEX);
 
     // solutions tree is represented by priority queue (best first solution)
-    PathQueue pathQueue;
+    PathQueue solutionsTree;
 
-    startAlgorithm(verticies, currentBestPartialPath, pathQueue);
+    startAlgorithm(verticies, currentBestPartialPath, solutionsTree, bestSolutionHolder);
 
-    return bestSequence;
+    return bestSolutionHolder.second;
 }
 
 void BranchAndBound::startAlgorithm(std::vector<uint32_t>& verticies,
-                                    std::vector<uint32_t>& currentBestPartialPath, BranchAndBound::PathQueue& pathQueue)
+                                    std::vector<uint32_t>& currentBestPartialPath, BranchAndBound::PathQueue& solutionsTree,
+                                                                                   BranchAndBound::BestSolutionHolder& bestSolutionHolder)
 {
     // solutions tree root will hold basic path with starting point only
     currentBestPartialPath.push_back(0);
     currentBestPartialPath.push_back(STARTING_VERTEX);
-    pathQueue.push(currentBestPartialPath);
+    solutionsTree.push(currentBestPartialPath);
 
     // algorithm will loop until no better solution can be found
-    while(!pathQueue.empty())
+    while(!solutionsTree.empty())
     {
         // load currently best solution, ignore all other solutions
-        currentBestPartialPath = pathQueue.top();
-        pathQueue.pop();
+        currentBestPartialPath = solutionsTree.top();
+        solutionsTree.pop();
 
         // if better solution can be found, start calculations
-        if(isGivenPathPromising(currentBestPartialPath.front(), bestPathLength))
+        if(isGivenPathPromising(currentBestPartialPath.front(), bestSolutionHolder.first))
         {
-            performCalculations(verticies, currentBestPartialPath, pathQueue);
+            performCalculations(verticies, currentBestPartialPath, solutionsTree, bestSolutionHolder);
         }
         else
         {
@@ -62,7 +65,8 @@ void BranchAndBound::startAlgorithm(std::vector<uint32_t>& verticies,
 }
 
 void BranchAndBound::performCalculations(std::vector<uint32_t>& verticies,
-                                         std::vector<uint32_t>& currentBestPartialPath, BranchAndBound::PathQueue& pathQueue)
+                                         std::vector<uint32_t>& currentBestPartialPath, BranchAndBound::PathQueue& solutionsTree,
+                                                                                        BranchAndBound::BestSolutionHolder& bestSolutionHolder)
 {
     for(auto nextPossibleVertex = verticies.begin(); nextPossibleVertex != verticies.end(); ++nextPossibleVertex)
     {
@@ -80,7 +84,7 @@ void BranchAndBound::performCalculations(std::vector<uint32_t>& verticies,
         if(isCurrentlyEvaluatedPathEnding(newPartialPath, verticies))
         {
             // calculate overall Hamilton cycle cost and compare path to currently best known solution
-            finalizeCalculations(newPartialPath);
+            finalizeCalculations(newPartialPath, bestSolutionHolder);
         }
         else
         {
@@ -88,9 +92,9 @@ void BranchAndBound::performCalculations(std::vector<uint32_t>& verticies,
             performNextIteration(verticies, currentBestPartialPath, newPartialPath);
 
             // push promising partial path on the tree
-            if(isGivenPathPromising(newPartialPath.front(), bestPathLength))
+            if(isGivenPathPromising(newPartialPath.front(), bestSolutionHolder.first))
             {
-                pathQueue.push(newPartialPath);
+                solutionsTree.push(newPartialPath);
             }
         }
     }
@@ -142,21 +146,21 @@ void BranchAndBound::performNextIteration(std::vector<uint32_t>& verticies,
     }
 }
 
-void BranchAndBound::finalizeCalculations(std::vector<uint32_t>& pathWithSolution)
+void BranchAndBound::finalizeCalculations(std::vector<uint32_t>& pathWithSolution, BranchAndBound::BestSolutionHolder& bestSolutionHolder)
 {
     pathWithSolution.push_back(STARTING_VERTEX);
     pathWithSolution.front() = calculatePathsCost(pathWithSolution);
 
-    assignNewBestPathIfPossible(pathWithSolution);
+    assignNewBestPathIfPossible(pathWithSolution, bestSolutionHolder);
 }
 
-void BranchAndBound::assignNewBestPathIfPossible(std::vector<uint32_t>& possibleBestPath)
+void BranchAndBound::assignNewBestPathIfPossible(std::vector<uint32_t>& possibleBestPath, BranchAndBound::BestSolutionHolder& bestSolutionHolder)
 {
-    if(isGivenPathPromising(possibleBestPath.front(), bestPathLength))
+    if(isGivenPathPromising(possibleBestPath.front(), bestSolutionHolder.first))
     {
-        bestPathLength = possibleBestPath.front();
+        bestSolutionHolder.first = possibleBestPath.front();
         possibleBestPath.erase(possibleBestPath.begin());
-        bestSequence = possibleBestPath;
+        bestSolutionHolder.second = possibleBestPath;
     }
 }
 

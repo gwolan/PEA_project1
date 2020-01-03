@@ -6,6 +6,8 @@
 #include <Menu/Actions/GenerateRandomGraph.hpp>
 #include <Menu/Actions/PerformBruteForce.hpp>
 #include <Menu/Actions/PerformBranchAndBound.hpp>
+#include <Menu/Actions/MeasureBruteForce.hpp>
+#include <Menu/Actions/MeasureBranchAndBound.hpp>
 
 
 IOhandler::IOhandler(const std::string& menuContent)
@@ -72,10 +74,12 @@ bool IOhandler::validateInput()
         break;
         case '6':
         {
+            selectedAction = std::make_unique<MeasureBruteForce>("Pomiary dla przegladu zupelnego");
         }
         break;
         case '7':
         {
+            selectedAction = std::make_unique<MeasureBranchAndBound>("Pomiary dla Branch&Bound");
         }
         break;
         default:
