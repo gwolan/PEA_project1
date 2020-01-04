@@ -7,7 +7,7 @@ Logger::Logger(const std::string& prologue)
     , logFileName("logs.txt")
     , logFile()
 {
-    logFile.open(logFileName);
+    logFile.open(logFileName, std::ofstream::app);
 }
 
 Logger::~Logger()
@@ -20,5 +20,6 @@ Logger::log(const std::string& log, const std::string functionName)
     if(logFile.is_open())
     {
         logFile << prefix << functionName << ": " << log << "\n";
+        logFile.flush();
     }
 }
