@@ -1,5 +1,5 @@
 #include <iostream>
-#include <Menu/Actions/DisplayGraph.hpp>
+#include <Application/Menu/Actions/DisplayGraph.hpp>
 #include <Graph/GraphMatrix.hpp>
 
 

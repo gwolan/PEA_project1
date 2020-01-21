@@ -13,8 +13,8 @@ set(CMAKE_CXX_FLAGS "-O3")
 #######################################################
 set(SOURCE_DIRECTORIES
         Algorithms/
+        Application/
         Graph/
-        Menu/
         Miscellanous/
    )
 

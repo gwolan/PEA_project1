@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Menu/Actions/BaseAction.hpp>
+#include <Application/Menu/Actions/BaseAction.hpp>
 
 
 class ExitProgram : public BaseAction

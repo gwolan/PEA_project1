@@ -1,5 +1,5 @@
 #include <iostream>
-#include <Menu/Actions/GenerateRandomGraph.hpp>
+#include <Application/Menu/Actions/GenerateRandomGraph.hpp>
 #include <Graph/GraphMatrix.hpp>
 
 

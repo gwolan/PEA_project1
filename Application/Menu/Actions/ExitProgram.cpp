@@ -1,5 +1,4 @@
-#include <Menu/Actions/ExitProgram.hpp>
-#include <iostream>
+#include <Application/Menu/Actions/ExitProgram.hpp>
 
 
 ExitProgram::ExitProgram(const std::string& actionName)

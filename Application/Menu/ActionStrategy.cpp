@@ -1,46 +1,29 @@
 #include <iostream>
-#include <Menu/IOhandler.hpp>
-#include <Menu/Actions/ExitProgram.hpp>
-#include <Menu/Actions/ReadGraphFromFile.hpp>
-#include <Menu/Actions/DisplayGraph.hpp>
-#include <Menu/Actions/GenerateRandomGraph.hpp>
-#include <Menu/Actions/PerformBruteForce.hpp>
-#include <Menu/Actions/PerformBranchAndBound.hpp>
-#include <Menu/Actions/MeasureBruteForce.hpp>
-#include <Menu/Actions/MeasureBranchAndBound.hpp>
+#include <Application/Menu/ActionStrategy.hpp>
+#include <Application/Menu/Actions/ExitProgram.hpp>
+#include <Application/Menu/Actions/ReadGraphFromFile.hpp>
+#include <Application/Menu/Actions/DisplayGraph.hpp>
+#include <Application/Menu/Actions/GenerateRandomGraph.hpp>
+#include <Application/Menu/Actions/PerformBruteForce.hpp>
+#include <Application/Menu/Actions/PerformBranchAndBound.hpp>
+#include <Application/Menu/Actions/MeasureBruteForce.hpp>
+#include <Application/Menu/Actions/MeasureBranchAndBound.hpp>
 
 
-IOhandler::IOhandler(const std::string& menuContent)
-    : selectedAction(nullptr)
-    , currentSelection(0)
-    , menu(menuContent)
+ActionStrategy::ActionStrategy(std::unique_ptr<GraphMatrix>& graphMatrix)
+    : graph(graphMatrix)
+    , selectedAction(nullptr)
 { }
 
-void IOhandler::printMenu()
+void ActionStrategy::executeAction()
 {
-    std::cout << menu;
+    selectedAction->init(graph);
+    selectedAction->run();
 }
 
-char IOhandler::getCurrentMenuSelection()
+bool ActionStrategy::selectAction(char selection)
 {
-    return currentSelection;
-}
-
-BaseAction* IOhandler::getSelectedAction()
-{
-    return selectedAction.get();
-}
-
-bool IOhandler::readMenuSelection()
-{
-    std::cin >> currentSelection;
-
-    return validateInput();
-}
-
-bool IOhandler::validateInput()
-{
-    switch(currentSelection)
+    switch(selection)
     {
         case '0':
         {

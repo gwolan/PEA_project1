@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <cstdint>
-#include <Menu/Actions/PerformBranchAndBound.hpp>
+#include <Application/Menu/Actions/PerformBranchAndBound.hpp>
 #include <Graph/GraphMatrix.hpp>
 
 

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <cstdint>
-#include <Menu/Actions/PerformBruteForce.hpp>
+#include <Application/Menu/Actions/PerformBruteForce.hpp>
 #include <Graph/GraphMatrix.hpp>
 
 

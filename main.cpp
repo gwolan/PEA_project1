@@ -1,10 +1,8 @@
-#include <Menu/IOhandler.hpp>
-#include <Graph/GraphMatrix.hpp>
+#include <Application/ApplicationFacade.hpp>
 
 
 int main()
 {
-    std::unique_ptr<GraphMatrix> graphMatrix(nullptr);
     std::string menuContent(std::string("\n====================\n") +
                             std::string("PEA Projekt nr 1: Travelling Salesman Problem\n") +
                             std::string("Autor: Grzegorz Wolanski\n\n") +
@@ -20,17 +18,13 @@ int main()
                             std::string("Wybor: "));
 
 
-    IOhandler ioHandler(menuContent);
+    ApplicationFacade application(menuContent);
 
-    while(ioHandler.getCurrentMenuSelection() != '0')
+    while(application.getCurrentMenuSelection() != '0')
     {
-        ioHandler.printMenu();
-
-        if(ioHandler.readMenuSelection())
-        {
-            ioHandler.getSelectedAction()->init(graphMatrix);
-            ioHandler.getSelectedAction()->run();
-        }
+        application.printMenu();
+        application.readMenuSelection();
+        application.run();
     }
 
     return 0;

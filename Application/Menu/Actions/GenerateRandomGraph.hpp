@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <Menu/Actions/BaseAction.hpp>
+#include <Application/Menu/Actions/BaseAction.hpp>
 #include <Miscellanous/Dice.hpp>
 
 

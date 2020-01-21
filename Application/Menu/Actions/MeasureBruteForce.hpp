@@ -5,19 +5,19 @@
 #include <map>
 #include <fstream>
 #include <cstdint>
-#include <Menu/Actions/BaseAction.hpp>
-#include <Algorithms/BranchAndBound.hpp>
+#include <Application/Menu/Actions/BaseAction.hpp>
+#include <Algorithms/BruteForce.hpp>
 #include <Miscellanous/Timer.hpp>
 #include <Miscellanous/Dice.hpp>
 
 
 class GraphMatrix;
 
-class MeasureBranchAndBound : public BaseAction
+class MeasureBruteForce : public BaseAction
 {
     public:
-    MeasureBranchAndBound(const std::string& actionName);
-    ~MeasureBranchAndBound();
+    MeasureBruteForce(const std::string& actionName);
+    ~MeasureBruteForce();
 
     void run();
     void init(std::unique_ptr<GraphMatrix>& graphMatrix);
@@ -33,7 +33,7 @@ class MeasureBranchAndBound : public BaseAction
     void fillGraphAdjacencyMatrix();
 
     std::unique_ptr<GraphMatrix> graph;
-    BranchAndBound branchAndBound;
+    BruteForce bruteForce;
     Timer timer;
     Dice dice;
 

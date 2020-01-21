@@ -2,7 +2,7 @@
 
 #include <fstream>
 #include <memory>
-#include <Menu/Actions/BaseAction.hpp>
+#include <Application/Menu/Actions/BaseAction.hpp>
 
 
 class GraphMatrix;

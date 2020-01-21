@@ -2,40 +2,40 @@
 #include <vector>
 #include <cstdint>
 #include <numeric>
-#include <Menu/Actions/MeasureBranchAndBound.hpp>
+#include <Application/Menu/Actions/MeasureBruteForce.hpp>
 #include <Graph/GraphMatrix.hpp>
 
 
-MeasureBranchAndBound::MeasureBranchAndBound(const std::string& actionName)
+MeasureBruteForce::MeasureBruteForce(const std::string& actionName)
     : BaseAction(actionName)
     , graph(nullptr)
-    , branchAndBound()
+    , bruteForce()
     , timer()
     , dice(1, 999)
     , citiesCountToSolvingTimeMap()
     , measurementsCount()
     , configurationFile()
-    , configurationFileName("BranchAndBound_config.txt")
+    , configurationFileName("BruteForce_config.txt")
     , configurationFileContent()
     , resultsFile()
-    , resultsFileName("BranchAndBound_results.txt")
-    , DEFAULT_PROBLEM_SIZES( { 4, 7, 9, 11, 14, 18, 21 } )
+    , resultsFileName("BruteForce_results.txt")
+    , DEFAULT_PROBLEM_SIZES( { 4, 7, 9, 11 } )
     , DEFAULT_MEASUREMENTS_COUNT(100)
 { }
 
-MeasureBranchAndBound::~MeasureBranchAndBound()
+MeasureBruteForce::~MeasureBruteForce()
 {
     configurationFile.close();
     resultsFile.close();
 }
 
-void MeasureBranchAndBound::init(std::unique_ptr<GraphMatrix>& graphMatrix)
+void MeasureBruteForce::init(std::unique_ptr<GraphMatrix>& graphMatrix)
 {
     configurationFile.open(configurationFileName);
     initializeConfiguration();
 }
 
-void MeasureBranchAndBound::initializeConfiguration()
+void MeasureBruteForce::initializeConfiguration()
 {
     if(configurationFile.is_open())
     {
@@ -49,7 +49,7 @@ void MeasureBranchAndBound::initializeConfiguration()
     }
 }
 
-void MeasureBranchAndBound::readConfigFile()
+void MeasureBruteForce::readConfigFile()
 {
     configurationFile >> configurationFileContent;
     measurementsCount = std::atoi(configurationFileContent.c_str());
@@ -65,7 +65,7 @@ void MeasureBranchAndBound::readConfigFile()
     configurationFile.close();
 }
 
-void MeasureBranchAndBound::setDefaultValues()
+void MeasureBruteForce::setDefaultValues()
 {
     measurementsCount = DEFAULT_MEASUREMENTS_COUNT;
 
@@ -75,7 +75,7 @@ void MeasureBranchAndBound::setDefaultValues()
     }
 }
 
-void MeasureBranchAndBound::run()
+void MeasureBruteForce::run()
 {
     performMeasurements();
     saveResultsToFile();
@@ -83,9 +83,9 @@ void MeasureBranchAndBound::run()
     std::cout << "Pomiary skonczone." << std::endl << std::endl;
 }
 
-void MeasureBranchAndBound::performMeasurements()
+void MeasureBruteForce::performMeasurements()
 {
-    std::cout << "Rozpoczecie pomiarow dla Branch&Bound." << std::endl;
+    std::cout << "Rozpoczecie pomiarow dla przegladu zupelnego." << std::endl;
 
     for(std::size_t measurementIteration = 0;
                     measurementIteration < measurementsCount; ++measurementIteration)
@@ -99,7 +99,7 @@ void MeasureBranchAndBound::performMeasurements()
             fillGraphAdjacencyMatrix();
 
             timer.start();
-            branchAndBound.performBranchAndBoundOnGraph(graph);
+            bruteForce.performBruteForceOnGraph(graph);
             timer.stop();
             problem->second += timer.getTime();
         }
@@ -108,7 +108,7 @@ void MeasureBranchAndBound::performMeasurements()
     calculateResults();
 }
 
-void MeasureBranchAndBound::calculateResults()
+void MeasureBruteForce::calculateResults()
 {
     for(auto problem  = citiesCountToSolvingTimeMap.begin();
              problem != citiesCountToSolvingTimeMap.end(); ++problem)
@@ -117,7 +117,7 @@ void MeasureBranchAndBound::calculateResults()
     }
 }
 
-void MeasureBranchAndBound::saveResultsToFile()
+void MeasureBruteForce::saveResultsToFile()
 {
     resultsFile.open(resultsFileName);
 
@@ -131,7 +131,7 @@ void MeasureBranchAndBound::saveResultsToFile()
     std::cout << "Wyniki pomyślnie zapisano do pliku." << std::endl;
 }
 
-void MeasureBranchAndBound::fillGraphAdjacencyMatrix()
+void MeasureBruteForce::fillGraphAdjacencyMatrix()
 {
     uint32_t vertexCount = graph->getVertexCount();
 
