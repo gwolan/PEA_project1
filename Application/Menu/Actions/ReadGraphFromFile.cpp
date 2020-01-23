@@ -7,6 +7,7 @@ ReadGraphFromFile::ReadGraphFromFile(const std::string& actionName)
     : BaseAction(actionName)
     , graph(nullptr)
     , tspDataFileContent()
+    , fileName()
     , tspDataFile()
     , vertexCount(0)
 { }
@@ -15,7 +16,7 @@ void ReadGraphFromFile::init(std::unique_ptr<GraphMatrix>& graphMatrix)
 {
     graph = &graphMatrix;
 
-    tspDataFile.open("tsp_data.txt");
+    openFile();
     readVertexCountIfPossible();
 }
 
@@ -33,9 +34,17 @@ void ReadGraphFromFile::run()
     }
     else
     {
-        std::cout << "Plik \"tsp_data.txt\" nie istnieje!" << std::endl;
+        std::cout << "Plik \"" << fileName << "\" nie istnieje!" << std::endl;
         std::cout << std::endl;
     }
+}
+
+void ReadGraphFromFile::openFile()
+{
+    std::cout << "Podaj nazwe pliku: ";
+    std::cin >> fileName;
+
+    tspDataFile.open(fileName);
 }
 
 void ReadGraphFromFile::readVertexCountIfPossible()
