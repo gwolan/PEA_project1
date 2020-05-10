@@ -10,7 +10,7 @@ class Logger
     Logger(const std::string& prologue);
     ~Logger();
 
-    log(const std::string& log, const std::string functionName);
+    void log(const std::string& log, const std::string functionName);
 
 
     private:

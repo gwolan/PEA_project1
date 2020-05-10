@@ -15,7 +15,7 @@ class ApplicationFacade
 
     void run();
     void printMenu();
-    bool readMenuSelection();
+    void readMenuSelection();
     char getCurrentMenuSelection();
 
 

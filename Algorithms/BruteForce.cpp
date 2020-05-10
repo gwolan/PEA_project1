@@ -52,7 +52,7 @@ void BruteForce::findAllPossiblePaths(std::vector<uint32_t>& verticies, std::vec
         listOfPossiblePaths.back().emplace_back(verticies.front(), weight);
 
         // add rest of the possible routes within graph matrix
-        for(int i = 1; i < verticies.size(); i++)
+        for(uint32_t i = 1; i < verticies.size(); i++)
         {
             weight = (*graph)->getWeight(verticies[i - 1], verticies[i]);
             listOfPossiblePaths.back().emplace_back(verticies[i], weight);

@@ -51,5 +51,5 @@ class BranchAndBound
 
     std::unique_ptr<GraphMatrix>* graph;
     const int32_t INFINITY;
-    const int32_t STARTING_VERTEX;
+    const uint32_t STARTING_VERTEX;
 };

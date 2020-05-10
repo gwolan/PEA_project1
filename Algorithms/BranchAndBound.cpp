@@ -206,5 +206,5 @@ bool BranchAndBound::doVerticiesCreateEdge(const uint32_t edgeBegin, const uint3
 
 bool BranchAndBound::isGivenPathPromising(const uint32_t currentCost, const uint32_t upperBound)
 {
-    return (upperBound == INFINITY) || (currentCost < upperBound);
+    return (upperBound == static_cast<uint32_t>(INFINITY)) || (currentCost < upperBound);
 }

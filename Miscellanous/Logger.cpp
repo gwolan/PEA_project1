@@ -15,7 +15,7 @@ Logger::~Logger()
     logFile.close();
 }
 
-Logger::log(const std::string& log, const std::string functionName)
+void Logger::log(const std::string& log, const std::string functionName)
 {
     if(logFile.is_open())
     {
